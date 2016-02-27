@@ -36,12 +36,14 @@ def generate_csv
             end
           end
         else
-          links = order.css('.a-box')[1].css('.a-link-normal')
-          links.each do |link|
-            title = link.text.chomp.strip
-            if title && title != '' && title != '非表示にする'
-              urls << BASE_URL_AMAZON + link.attribute('href')
-              titles << title
+          if order.css('.a-box') && order.css('.a-box')[1]
+            links = order.css('.a-box')[1].css('.a-link-normal')
+            links.each do |link|
+              title = link.text.chomp.strip
+              if title && title != '' && title != '非表示にする'
+                urls << BASE_URL_AMAZON + link.attribute('href')
+                titles << title
+              end
             end
           end
         end

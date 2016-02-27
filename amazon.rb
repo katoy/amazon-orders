@@ -59,7 +59,7 @@ module Amazon
       wd.find_element(:id, 'ap_password').clear
       wd.find_element(:id, 'ap_password').send_keys auth[:password]
 
-      wd.find_element(:id, 'signInSubmit-input').click
+      wd.find_element(:id, 'signInSubmit').click
 
       # unless wd.find_element(:xpath, "//form[@id='order-dropdown-form']/select//option[4]").selected?
       #   wd.find_element(:xpath, "//form[@id='order-dropdown-form']/select//option[4]").click  # 今年の注文
@@ -67,13 +67,25 @@ module Amazon
       # wd.find_element(:css, "#order-dropdown-form > span.in-amzn-btn.btn-prim-med > span > input[type=\"submit\"]").click
 
       # 去年１年分
-      wd.get "https://www.amazon.co.jp/gp/css/order-history?ie=UTF8&ref_=nav_gno_yam_yrdrs&"
+      # wd.get "https://www.amazon.co.jp/gp/css/order-history?ie=UTF8&ref_=nav_gno_yam_yrdrs&"
+      # sleep 1
+      # unless wd.find_element(:id, "a-autoid-1-announce").selected?
+      #  wd.find_element(:id, "a-autoid-1-announce").click
+      #  wd.find_element(:id, "dropdown1_3").click
+      #  sleep 2
+      # end
+
+      # 今年１年分
+      wd.get "https://www.amazon.co.jp/gp/css/order-history?ie=UTF8&ref_=nav_gno_yam_yrdrs"
+
       sleep 1
-      unless wd.find_element(:id, "a-autoid-1-announce").selected?
-        wd.find_element(:id, "a-autoid-1-announce").click
-        wd.find_element(:id, "dropdown1_3").click
-        sleep 2
-      end
+      # unless wd.find_element(:id, "a-autoid-1-announce").selected?
+      #  wd.find_element(:id, "a-autoid-1-announce").click
+      #  wd.find_element(:id, "dropdown1_2").click
+      #  sleep 2
+      #end
+      wd.find_element(:id, "orderFilterEntry-year-2015").click
+      sleep 2
 
       # [次] ページをめくっていく
       loop do
