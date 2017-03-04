@@ -1,6 +1,4 @@
-# -*- coding: utf-8 -*-
-
-# 1. amazon の購入履歴を取得する。(scrennshots/* に保存される)
+# 1. amazon の購入履歴を取得する。(screeshots/* に保存される)
 #   $ ruby amazon.rb email password
 #
 # 2. 取得した情報から、明細書(*.png) を１つの PDF にまとめたものを作成する。
@@ -11,9 +9,11 @@
 #   $ ruby make-index.rb > 1.csv
 
 require 'rubygems'
-require 'selenium-webdriver'
+require 'selenium-webdriver' # gem install selenium-webdriver
+# brew install geckodriver
+# brew install ChromeDriver
 
-SCREENSHOTS_DIR = './screenshots'
+SCREENSHOTS_DIR = './screenshots'.freeze
 
 module Amazon
   class Driver
@@ -33,11 +33,11 @@ module Amazon
     def save_order(wd)
       sleep 1
       wd.find_element(:link_text, '利用規約')
-      orders = wd.find_elements(:link_text, '領収書／購入明細書')
+      orders = wd.find_elements(:link_text, '注文の詳細')
       orders.each do |ord|
-
         open_new_window(wd, ord.attribute('href')) do
           @order_seq += 1
+          sleep(4)
           wd.save_screenshot("#{SCREENSHOTS_DIR}/order_#{format('%03d', @order_seq)}.png")
         end
       end
@@ -76,15 +76,15 @@ module Amazon
       # end
 
       # 今年１年分
-      wd.get "https://www.amazon.co.jp/gp/css/order-history?ie=UTF8&ref_=nav_gno_yam_yrdrs"
+      wd.get 'https://www.amazon.co.jp/gp/css/order-history?ie=UTF8&ref_=nav_gno_yam_yrdrs'
 
       sleep 1
       # unless wd.find_element(:id, "a-autoid-1-announce").selected?
       #  wd.find_element(:id, "a-autoid-1-announce").click
       #  wd.find_element(:id, "dropdown1_2").click
       #  sleep 2
-      #end
-      wd.find_element(:id, "orderFilterEntry-year-2015").click
+      # end
+      wd.find_element(:id, 'orderFilterEntry-year-2016').click
       sleep 2
 
       # [次] ページをめくっていく
@@ -121,7 +121,8 @@ end
 wd = nil
 begin
   ad = Amazon::Driver.new
-  wd = Selenium::WebDriver.for :firefox
+  # wd = Selenium::WebDriver.for :firefox
+  wd = Selenium::WebDriver.for :chrome
   wd.manage.timeouts.implicit_wait = 20 # 秒
   ad.save_order_history(wd, email: ARGV[0], password: ARGV[1])
 ensure
