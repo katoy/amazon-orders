@@ -1,4 +1,6 @@
-# 1. amazon の購入履歴を取得する。(screeshots/* に保存される)
+# frozen_string_literal: true
+
+# 1. amazon の購入履歴を取得する。(screenshots/* に保存される)
 #   $ ruby amazon.rb email password
 #
 # 2. 取得した情報から、明細書(*.png) を１つの PDF にまとめたものを作成する。
@@ -13,11 +15,11 @@ require 'selenium-webdriver' # gem install selenium-webdriver
 # brew install geckodriver
 # brew install ChromeDriver
 
-SCREENSHOTS_DIR = './screenshots'.freeze
+SCREENSHOTS_DIR = './screenshots'
 
 module Amazon
   class Driver
-    # 新しいタブで 指定された URL を開き、制御をそのタブに移す。
+    # 新しいタブで指定された URL を開き、制御をそのタブに移す。
     def open_new_window(wd, url)
       a = wd.execute_script("var d=document,a=d.createElement('a');a.target='_blank';a.href=arguments[0];a.innerHTML='.';d.body.appendChild(a);return a", url)
       a.click
@@ -84,7 +86,7 @@ module Amazon
       #  wd.find_element(:id, "dropdown1_2").click
       #  sleep 2
       # end
-      wd.find_element(:id, 'orderFilterEntry-year-2016').click
+      wd.find_element(:id, 'orderFilterEntry-year-2017').click
       sleep 2
 
       # [次] ページをめくっていく
