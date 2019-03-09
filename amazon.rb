@@ -86,7 +86,7 @@ module Amazon
       #  wd.find_element(:id, "dropdown1_2").click
       #  sleep 2
       # end
-      wd.find_element(:id, 'orderFilterEntry-year-2017').click
+      wd.find_element(:id, 'orderFilterEntry-year-2018').click
       sleep 2
 
       # [次] ページをめくっていく
@@ -126,6 +126,7 @@ begin
   # wd = Selenium::WebDriver.for :firefox
   wd = Selenium::WebDriver.for :chrome
   wd.manage.timeouts.implicit_wait = 20 # 秒
+  wd.manage.window.resize_to(1024, 800)
   ad.save_order_history(wd, email: ARGV[0], password: ARGV[1])
 ensure
   wd.quit if wd
