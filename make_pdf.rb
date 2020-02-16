@@ -1,5 +1,6 @@
+# frozen_string_literal: true
 
-SPACE = ' '.freeze
+SPACE = ' '
 WORK_DIR = './tmp'
 
 Dir.glob("#{WORK_DIR}/order*.png").sort.each_slice(2).with_index do |a, idx|

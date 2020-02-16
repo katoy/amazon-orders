@@ -6,7 +6,8 @@
     電子領収書を１つの PDF ファイルにまとめる。
     $ convert -resize 575x823 -gravity north -background white -extent 595x842 screenshots/order*.png 1.pdf
     または
-    % pdfjam --paper a4paper --outfile 1.pdf screenshots/order*.png
+    % pdfjam --paper a4paper --outfile 1.pdf screenshots/order_*.png
+
 
 あるいは、pdf にしたい png を tmp/ 以下に置き
     $ ruby make_pdf.png

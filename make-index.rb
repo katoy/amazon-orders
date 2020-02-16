@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+# frozen_string_literal: true
 
 require 'open-uri'
 require 'nokogiri'
@@ -14,7 +14,7 @@ end
 # @return csv 形式の文字列
 def generate_csv
   csv_string = CSV.generate do |csv|
-    Dir::glob("screenshots/**/*.html").each do |path|
+    Dir::glob("screenshots/**/*.html").sort.each do |path|
       f = File.open path
 
       page = Nokogiri::XML f
@@ -48,11 +48,14 @@ def generate_csv
           end
         end
 
-        (0..titles.size - 1).each do |idx|
-          price = 0 if idx > 0
-          csv <<  [date, "#{format('%8d', price)}", titles[idx], urls[idx]]
-        end
+        titles.each_with_index do |title, idx|
+          next if title == '注文の詳細'
+          next if title == 'こちら'
+          next if title == '領収書／購入明細書'
 
+          price = 0 if idx > 0
+          csv << [date, "#{format('%8d', price)}", title, urls[idx]]
+        end
       end
       f.close
     end

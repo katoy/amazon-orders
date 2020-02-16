@@ -37,7 +37,11 @@ module Amazon
       wd.find_element(:link_text, '利用規約')
       orders = wd.find_elements(:link_text, '注文の詳細')
       orders.each do |ord|
-        open_new_window(wd, ord.attribute('href')) do
+        invoice = ord.attribute('href').gsub(
+          %r{your-account/order-details/ref=ppx_yo_dt_b_order_details_.*\?ie=},
+          '/css/summary/print.html/ref=ppx_od_dt_b_invoice?ie='
+        )
+        open_new_window(wd, invoice) do
           @order_seq += 1
           sleep(4)
           wd.save_screenshot("#{SCREENSHOTS_DIR}/order_#{format('%03d', @order_seq)}.png")
@@ -57,6 +61,7 @@ module Amazon
       wd.find_element(:id, 'ap_email').clear
       wd.find_element(:id, 'ap_email').send_keys auth[:email]
 
+      wd.find_element(:id, 'continue').click
       wd.find_element(:id, 'ap_password').click
       wd.find_element(:id, 'ap_password').clear
       wd.find_element(:id, 'ap_password').send_keys auth[:password]
@@ -77,8 +82,10 @@ module Amazon
       #  sleep 2
       # end
 
-      # 今年１年分
-      wd.get 'https://www.amazon.co.jp/gp/css/order-history?ie=UTF8&ref_=nav_gno_yam_yrdrs'
+      # 今年１年分(2018)
+      # wd.get 'https://www.amazon.co.jp/gp/css/order-history?ie=UTF8&ref_=nav_gno_yam_yrdrs'
+      # 2019
+      wd.get 'https://www.amazon.co.jp/gp/your-account/order-history?ie=UTF8&orderFilter=year-2019'
 
       sleep 1
       # unless wd.find_element(:id, "a-autoid-1-announce").selected?
@@ -86,7 +93,9 @@ module Amazon
       #  wd.find_element(:id, "dropdown1_2").click
       #  sleep 2
       # end
-      wd.find_element(:id, 'orderFilterEntry-year-2018').click
+      # wd.find_element(:id, 'orderFilterEntry-year-2018').click
+      wd.find_element(:id, 'orderFilterEntry-year-2019').click
+
       sleep 2
 
       # [次] ページをめくっていく
@@ -102,8 +111,9 @@ module Amazon
         save_order(wd)
 
         sleep 0.5
-        elems = wd.find_elements(:link_text, "次へ→")
-        break if elems.size == 0
+        elems = wd.find_elements(:link_text, '次へ→')
+        break if elems.empty?
+
         elems[0].click
       end
 
@@ -126,7 +136,7 @@ begin
   # wd = Selenium::WebDriver.for :firefox
   wd = Selenium::WebDriver.for :chrome
   wd.manage.timeouts.implicit_wait = 20 # 秒
-  wd.manage.window.resize_to(1024, 800)
+  wd.manage.window.resize_to(1200, 1280)
   ad.save_order_history(wd, email: ARGV[0], password: ARGV[1])
 ensure
   wd.quit if wd
