@@ -10,6 +10,6 @@
 
 
 あるいは、pdf にしたい png を tmp/ 以下に置き
-    $ ruby make_pdf.png
+    $ ruby make_pdf.rb
 とすると 1 ページに２件で 10 ペー毎の PDFファイルが tmp/＊.pdf に作成される。
 (コンビ二のプリンターで印刷するのにちょうど良い)

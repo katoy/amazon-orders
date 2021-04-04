@@ -25,6 +25,7 @@ module Amazon
       a.click
       wd.switch_to.window(wd.window_handles.last)
 
+      sleep(3)
       wd.find_element(:link_text, '利用規約')
       yield
       wd.close
@@ -85,7 +86,9 @@ module Amazon
       # 今年１年分(2018)
       # wd.get 'https://www.amazon.co.jp/gp/css/order-history?ie=UTF8&ref_=nav_gno_yam_yrdrs'
       # 2019
-      wd.get 'https://www.amazon.co.jp/gp/your-account/order-history?ie=UTF8&orderFilter=year-2019'
+      # wd.get 'https://www.amazon.co.jp/gp/your-account/order-history?ie=UTF8&orderFilter=year-2019'
+      # 2020
+      wd.get 'https://www.amazon.co.jp/gp/your-account/order-history?ie=UTF8&orderFilter=year-2020'
 
       sleep 1
       # unless wd.find_element(:id, "a-autoid-1-announce").selected?
@@ -94,7 +97,8 @@ module Amazon
       #  sleep 2
       # end
       # wd.find_element(:id, 'orderFilterEntry-year-2018').click
-      wd.find_element(:id, 'orderFilterEntry-year-2019').click
+      # wd.find_element(:id, 'orderFilterEntry-year-2019').click
+      wd.find_element(:id, 'orderFilterEntry-year-2020').click
 
       sleep 2
 
