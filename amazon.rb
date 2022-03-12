@@ -14,6 +14,10 @@ require 'rubygems'
 require 'selenium-webdriver' # gem install selenium-webdriver
 # brew install geckodriver
 # brew install ChromeDriver
+#
+# https://qiita.com/apukasukabian/items/77832dd42e85ab7aa568
+#  seleniumを使用しようとしたら、「"chromedriver"は開発元を検証できないため開けません。」と言われた
+#
 
 SCREENSHOTS_DIR = './screenshots'
 
@@ -36,12 +40,9 @@ module Amazon
     def save_order(wd)
       sleep 1
       wd.find_element(:link_text, '利用規約')
-      orders = wd.find_elements(:link_text, '注文の詳細')
-      orders.each do |ord|
-        invoice = ord.attribute('href').gsub(
-          %r{your-account/order-details/ref=ppx_yo_dt_b_order_details_.*\?ie=},
-          '/css/summary/print.html/ref=ppx_od_dt_b_invoice?ie='
-        )
+      order_ids = wd.find_elements(:class_name, "value").map(&:text).select{|x| /\A\w+\-\w+\-\w+\z/.match(x)}
+      order_ids.each do |ord|
+        invoice = "https://www.amazon.co.jp/gp/css/summary/print.html/ref=oh_aui_ajax_invoice?ie=UTF8&orderID=#{ord}&print=1"
         open_new_window(wd, invoice) do
           @order_seq += 1
           sleep(4)
@@ -88,7 +89,7 @@ module Amazon
       # 2019
       # wd.get 'https://www.amazon.co.jp/gp/your-account/order-history?ie=UTF8&orderFilter=year-2019'
       # 2020
-      wd.get 'https://www.amazon.co.jp/gp/your-account/order-history?ie=UTF8&orderFilter=year-2020'
+      wd.get 'https://www.amazon.co.jp/gp/your-account/order-history?ie=UTF8&orderFilter=year-2021'
 
       sleep 1
       # unless wd.find_element(:id, "a-autoid-1-announce").selected?
@@ -98,7 +99,7 @@ module Amazon
       # end
       # wd.find_element(:id, 'orderFilterEntry-year-2018').click
       # wd.find_element(:id, 'orderFilterEntry-year-2019').click
-      wd.find_element(:id, 'orderFilterEntry-year-2020').click
+      wd.find_element(:id, 'orderFilterEntry-year-2021').click
 
       sleep 2
 

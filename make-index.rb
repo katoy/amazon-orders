@@ -14,48 +14,30 @@ end
 # @return csv 形式の文字列
 def generate_csv
   csv_string = CSV.generate do |csv|
+    csv << %w[購入日 価格 タイトル URL]
     Dir::glob("screenshots/**/*.html").sort.each do |path|
       f = File.open path
 
       page = Nokogiri::XML f
-      orders = page.css('.order')
-      orders.each do |order|
-        info = order.css('.order-info')
-        vals = info[0].css('.value')
-        date = Date.strptime(vals[0].text.strip, "%Y年%m月%d日")
-        price = price_to_int(vals[1].text.strip)
-        titles = []
-        urls = []
-        links = order.css('.shipment .a-row .a-link-normal')
-        if links.size > 0
-          links.each do |link|
-            title = link.text.chomp.strip
-            if title && title != '' && title != '非表示にする'
-              titles << title
-              urls << BASE_URL_AMAZON + link.attribute('href')
-            end
-          end
-        else
-          if order.css('.a-box') && order.css('.a-box')[1]
-            links = order.css('.a-box')[1].css('.a-link-normal')
-            links.each do |link|
-              title = link.text.chomp.strip
-              if title && title != '' && title != '非表示にする'
-                urls << BASE_URL_AMAZON + link.attribute('href')
-                titles << title
-              end
-            end
-          end
-        end
+      orders = page.css('.a-box-group.a-spacing-base.order.js-order-card')
+      nums = orders.map {|order| order.css(".a-fixed-left-grid-col.a-col-right").size }
+      nums += [0]
+      titles =
+        orders.css(".a-fixed-left-grid-col.a-col-right").map do |item|
+          item.text.split(/\r\n|\r|\n/)
+            .map{|x| x.gsub(/\A *\z/, '')}
+            .select{|x| x.length> 0}[0].strip
+        end.reverse
 
-        titles.each_with_index do |title, idx|
-          next if title == '注文の詳細'
-          next if title == 'こちら'
-          next if title == '領収書／購入明細書'
-
-          price = 0 if idx > 0
-          csv << [date, "#{format('%8d', price)}", title, urls[idx]]
-        end
+      orders.each_with_index do |order, idx| 
+        vals = order.css(".value").map(&:text)[0..3]
+        date = Date.strptime(vals[0].strip, "%Y年%m月%d日")
+        price = price_to_int(vals[1].strip)
+        url = "https://www.amazon.co.jp/gp/css/summary/print.html/ref=oh_aui_ajax_invoice?ie=UTF8&orderID=#{vals[3]}&print=1"
+        # p "#{nums[idx + 1]}, #{nums[idx]}"
+        # p  titles[(nums[idx + 1] - 1).. nums[idx]]
+        item_titles = titles[nums[idx + 1] ... nums[idx]].join("\n")
+        csv << [date, "#{format('%8d', price)}", item_titles, url]
       end
       f.close
     end
