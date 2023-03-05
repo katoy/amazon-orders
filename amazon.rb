@@ -40,7 +40,7 @@ module Amazon
     def save_order(wd)
       sleep 1
       wd.find_element(:link_text, '利用規約')
-      order_ids = wd.find_elements(:class_name, "value").map(&:text).select{|x| /\A\w+\-\w+\-\w+\z/.match(x)}
+      order_ids = wd.find_elements(:class_name, 'value').map(&:text).select { |x| /\A\w+-\w+-\w+\z/.match(x) }
       order_ids.each do |ord|
         invoice = "https://www.amazon.co.jp/gp/css/summary/print.html/ref=oh_aui_ajax_invoice?ie=UTF8&orderID=#{ord}&print=1"
         open_new_window(wd, invoice) do
@@ -88,8 +88,8 @@ module Amazon
       # wd.get 'https://www.amazon.co.jp/gp/css/order-history?ie=UTF8&ref_=nav_gno_yam_yrdrs'
       # 2019
       # wd.get 'https://www.amazon.co.jp/gp/your-account/order-history?ie=UTF8&orderFilter=year-2019'
-      # 2020
-      wd.get 'https://www.amazon.co.jp/gp/your-account/order-history?ie=UTF8&orderFilter=year-2021'
+      # 2022
+      wd.get 'https://www.amazon.co.jp/gp/your-account/order-history?ie=UTF8&orderFilter=year-2022'
 
       sleep 1
       # unless wd.find_element(:id, "a-autoid-1-announce").selected?
@@ -99,7 +99,7 @@ module Amazon
       # end
       # wd.find_element(:id, 'orderFilterEntry-year-2018').click
       # wd.find_element(:id, 'orderFilterEntry-year-2019').click
-      wd.find_element(:id, 'orderFilterEntry-year-2021').click
+      wd.find_element(:id, 'orderFilterEntry-year-2022').click
 
       sleep 2
 
@@ -108,9 +108,9 @@ module Amazon
         wd.find_element(:link_text, '利用規約')
         @page_seq += 1
         wd.save_screenshot("#{SCREENSHOTS_DIR}/page_#{format('%03d', @page_seq)}.png")
-        open("#{SCREENSHOTS_DIR}/page_#{format('%03d', @page_seq)}.html", 'w') {|f|
+        open("#{SCREENSHOTS_DIR}/page_#{format('%03d', @page_seq)}.html", 'w') do |f|
           f.write wd.page_source
-        }
+        end
 
         # ページ中の個々の注文を閲覧する。
         save_order(wd)
