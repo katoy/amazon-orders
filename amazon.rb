@@ -63,7 +63,7 @@ module Amazon
       wd.find_element(:id, 'ap_email').clear
       wd.find_element(:id, 'ap_email').send_keys auth[:email]
 
-      wd.find_element(:id, 'continue').click
+      # wd.find_element(:id, 'continue').click
       wd.find_element(:id, 'ap_password').click
       wd.find_element(:id, 'ap_password').clear
       wd.find_element(:id, 'ap_password').send_keys auth[:password]
@@ -89,7 +89,7 @@ module Amazon
       # 2019
       # wd.get 'https://www.amazon.co.jp/gp/your-account/order-history?ie=UTF8&orderFilter=year-2019'
       # 2022
-      wd.get 'https://www.amazon.co.jp/gp/your-account/order-history?ie=UTF8&orderFilter=year-2022'
+      wd.get 'https://www.amazon.co.jp/gp/your-account/order-history?ie=UTF8&orderFilter=year-2023'
 
       sleep 1
       # unless wd.find_element(:id, "a-autoid-1-announce").selected?
