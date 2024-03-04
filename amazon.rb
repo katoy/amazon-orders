@@ -30,6 +30,8 @@ module Amazon
       wd.switch_to.window(wd.window_handles.last)
 
       sleep(3)
+      # ズームレベルを80%に設定
+      wd.execute_script("document.body.style.zoom='80%'")
       wd.find_element(:link_text, '利用規約')
       yield
       wd.close
@@ -42,7 +44,11 @@ module Amazon
       wd.find_element(:link_text, '利用規約')
       order_ids = wd.find_elements(:class_name, 'value').map(&:text).select { |x| /\A\w+-\w+-\w+\z/.match(x) }
       order_ids.each do |ord|
-        invoice = "https://www.amazon.co.jp/gp/css/summary/print.html/ref=oh_aui_ajax_invoice?ie=UTF8&orderID=#{ord}&print=1"
+        next if ord == "503-2554326-5032625"
+
+        # invoice = "https://www.amazon.co.jp/gp/css/summary/print.html/ref=oh_aui_ajax_invoice?ie=UTF8&orderID=#{ord}&print=1"
+        invoice = "https://www.amazon.co.jp/gp/css/summary/print.html/ref=oh_aui_ajax_invoice?ie=UTF8&orderID=#{ord}"
+        p invoice
         open_new_window(wd, invoice) do
           @order_seq += 1
           sleep(4)
@@ -88,7 +94,7 @@ module Amazon
       # wd.get 'https://www.amazon.co.jp/gp/css/order-history?ie=UTF8&ref_=nav_gno_yam_yrdrs'
       # 2019
       # wd.get 'https://www.amazon.co.jp/gp/your-account/order-history?ie=UTF8&orderFilter=year-2019'
-      # 2022
+      # 2023
       wd.get 'https://www.amazon.co.jp/gp/your-account/order-history?ie=UTF8&orderFilter=year-2023'
 
       sleep 1
@@ -99,7 +105,8 @@ module Amazon
       # end
       # wd.find_element(:id, 'orderFilterEntry-year-2018').click
       # wd.find_element(:id, 'orderFilterEntry-year-2019').click
-      wd.find_element(:id, 'orderFilterEntry-year-2022').click
+      # wd.find_element(:id, 'orderFilterEntry-year-2023').click
+      wd.get 'https://www.amazon.co.jp/gp/your-account/order-history?ie=UTF8&orderFilter=year-2023'
 
       sleep 2
 
@@ -141,7 +148,12 @@ begin
   # wd = Selenium::WebDriver.for :firefox
   wd = Selenium::WebDriver.for :chrome
   wd.manage.timeouts.implicit_wait = 20 # 秒
-  wd.manage.window.resize_to(1200, 1280)
+
+  # wd.manage.window.resize_to(1200, 1280)
+
+  # ウィンドウサイズの調整
+  wd.manage.window.resize_to(900, 1280) # 横幅をズームレベルに合わせて調整
+
   ad.save_order_history(wd, email: ARGV[0], password: ARGV[1])
 ensure
   wd.quit if wd
