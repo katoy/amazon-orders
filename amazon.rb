@@ -44,15 +44,32 @@ module Amazon
       wd.find_element(:link_text, '利用規約')
       order_ids = wd.find_elements(:class_name, 'value').map(&:text).select { |x| /\A\w+-\w+-\w+\z/.match(x) }
       order_ids.each do |ord|
-        next if ord == "503-2554326-5032625"
-
         # invoice = "https://www.amazon.co.jp/gp/css/summary/print.html/ref=oh_aui_ajax_invoice?ie=UTF8&orderID=#{ord}&print=1"
-        invoice = "https://www.amazon.co.jp/gp/css/summary/print.html/ref=oh_aui_ajax_invoice?ie=UTF8&orderID=#{ord}"
-        p invoice
-        open_new_window(wd, invoice) do
-          @order_seq += 1
-          sleep(4)
-          wd.save_screenshot("#{SCREENSHOTS_DIR}/order_#{format('%03d', @order_seq)}.png")
+        invoice_1 = "https://www.amazon.co.jp/gp/css/summary/print.html/ref=oh_aui_ajax_invoice?ie=UTF8&orderID=#{ord}"
+        invoice_2 = "https://www.amazon.co.jp/gp/digital/your-account/order-summary.html?ie=UTF8&orderID=#{ord}&print=1&ref_=oh_aui_ajax_dpi"
+
+        # 電子書籍とそれ以外では、領収書の URL 形式が異なる
+        done = false
+        open_new_window(wd, invoice_1) do
+          page_content = wd.page_source # ページのHTMLソースを取得
+          if page_content.include?("支払い情報") # "支払い情報" という文字列が含まれている場合のみスクリーンショットを撮る
+            @order_seq += 1
+            p invoice_1
+            sleep(4)
+            wd.save_screenshot("#{SCREENSHOTS_DIR}/order_#{format('%03d', @order_seq)}.png")
+            done = true
+          end
+        end
+        next if done
+
+        open_new_window(wd, invoice_2) do
+          page_content = wd.page_source # ページのHTMLソースを取得
+          if page_content.include?("支払い情報") # "支払い情報" という文字列が含まれている場合のみスクリーンショットを撮る
+            @order_seq += 1
+            p invoice_2
+            sleep(4)
+            wd.save_screenshot("#{SCREENSHOTS_DIR}/order_#{format('%03d', @order_seq)}.png")
+          end
         end
       end
     end
@@ -69,7 +86,7 @@ module Amazon
       wd.find_element(:id, 'ap_email').clear
       wd.find_element(:id, 'ap_email').send_keys auth[:email]
 
-      # wd.find_element(:id, 'continue').click
+      wd.find_element(:id, 'continue').click
       wd.find_element(:id, 'ap_password').click
       wd.find_element(:id, 'ap_password').clear
       wd.find_element(:id, 'ap_password').send_keys auth[:password]
@@ -106,7 +123,7 @@ module Amazon
       # wd.find_element(:id, 'orderFilterEntry-year-2018').click
       # wd.find_element(:id, 'orderFilterEntry-year-2019').click
       # wd.find_element(:id, 'orderFilterEntry-year-2023').click
-      wd.get 'https://www.amazon.co.jp/gp/your-account/order-history?ie=UTF8&orderFilter=year-2023'
+      # wd.get 'https://www.amazon.co.jp/gp/your-account/order-history?ie=UTF8&orderFilter=year-2023'
 
       sleep 2
 
