@@ -45,6 +45,7 @@ module Amazon
       order_ids = wd.find_elements(:class_name, 'value').map(&:text).select { |x| /\A\w+-\w+-\w+\z/.match(x) }
       order_ids.each do |ord|
         # invoice = "https://www.amazon.co.jp/gp/css/summary/print.html/ref=oh_aui_ajax_invoice?ie=UTF8&orderID=#{ord}&print=1"
+        # invoice_1 = "https://www.amazon.co.jp/gp/css/summary/print.html/ref=oh_aui_ajax_invoice?ie=UTF8&orderID=#{ord}"
         invoice_1 = "https://www.amazon.co.jp/gp/css/summary/print.html/ref=oh_aui_ajax_invoice?ie=UTF8&orderID=#{ord}"
         invoice_2 = "https://www.amazon.co.jp/gp/digital/your-account/order-summary.html?ie=UTF8&orderID=#{ord}&print=1&ref_=oh_aui_ajax_dpi"
 
@@ -113,6 +114,8 @@ module Amazon
       # wd.get 'https://www.amazon.co.jp/gp/your-account/order-history?ie=UTF8&orderFilter=year-2019'
       # 2023
       wd.get 'https://www.amazon.co.jp/gp/your-account/order-history?ie=UTF8&orderFilter=year-2023'
+      # 2024
+      wd.get 'https://www.amazon.co.jp/gp/your-account/order-history?ie=UTF8&orderFilter=year-2024'
 
       sleep 1
       # unless wd.find_element(:id, "a-autoid-1-announce").selected?
